@@ -26,9 +26,8 @@ class PESectionUtils(object):
             return self.number_of_sections
         self.file_header_offs = self.get_file_header_offs()
         num_of_sections_offs = 0x2
-        # format string: <: little endian. H: 2 bytes (1 word)
-        num_of_sections_value = struct.unpack_from('<H', self.bin_contents, self.file_header_offs + num_of_sections_offs)
-        return num_of_sections_value[0]
+        num_of_sections_value = self._unpack_word(self.file_header_offs + num_of_sections_offs)
+        return num_of_sections_value
 
     def get_file_header_offs(self):
         if self.file_header_offs:
@@ -39,17 +38,15 @@ class PESectionUtils(object):
         if self.pe_header_offs:
             return self.pe_header_offs
         e_lfanew_offs = 0x3C
-        # format string: <: little endian. L: 4 bytes (1 dword)
-        pe_header_offs = struct.unpack_from('<L', self.bin_contents, self.image_dos_header_offs + e_lfanew_offs)
-        self.pe_header_offs = pe_header_offs[0]
+        pe_header_offs = self._unpack_dword(self.image_dos_header_offs + e_lfanew_offs)
+        self.pe_header_offs = pe_header_offs
         return self.pe_header_offs
 
     def get_file_header_optional_header_size(self):
         self.file_header_offs = self.get_file_header_offs()
         optional_header_size_offs = 0x10
-        # format string: <: little endian. H: 2 bytes (1 word)
-        size_of_optional_header = struct.unpack_from('<H', self.bin_contents, self.file_header_offs + optional_header_size_offs)
-        return size_of_optional_header[0]
+        size_of_optional_header = self._unpack_word(self.file_header_offs + optional_header_size_offs)
+        return size_of_optional_header
 
     def get_optional_header_offs(self):
         if self.optional_header_offs:
@@ -69,36 +66,43 @@ class PESectionUtils(object):
         return section_header_info
 
     def get_section_name(self, section_header_offs):
-        # format string: >: big endian. Q: 8 bytes (2 dwords)
-        section_name = struct.unpack_from('>Q', self.bin_contents, section_header_offs)
-        section_name = self._bytes_to_string(section_name[0], 8)
+        section_name = self._unpack_qword_big_endian(section_header_offs)
+        section_name = self._bytes_to_string(section_name, 8)
         return section_name
 
     def get_section_virtual_size(self, section_header_offs):
         virtual_size_offs = section_header_offs + 0x8
-        # format string: <: little endian. L: 4 bytes (1 dword)
-        virtual_size = struct.unpack_from('<L', self.bin_contents, virtual_size_offs)
-        return virtual_size[0]
+        virtual_size = self._unpack_dword(virtual_size_offs)
+        return virtual_size
 
     def get_section_virtual_address(self, section_header_offs):
         virtual_address_offs = section_header_offs + 0xc
-        # format string: <: little endian. L: 4 bytes (1 dword)
-        virtual_size = struct.unpack_from('<L', self.bin_contents, virtual_address_offs)
-        return virtual_size[0]
+        virtual_size = self._unpack_dword(virtual_address_offs)
+        return virtual_size
 
     def get_section_size_of_raw_data(self, section_header_offs):
         size_of_raw_data_offs = section_header_offs + 0x10
-        # format string: <: little endian. L: 4 bytes (1 dword)
-        virtual_size = struct.unpack_from('<L', self.bin_contents, size_of_raw_data_offs)
-        return virtual_size[0]
+        virtual_size = self._unpack_dword(size_of_raw_data_offs)
+        return virtual_size
 
     def get_section_pointer_to_raw_data(self, section_header_offs):
         pointer_to_raw_data_offs = section_header_offs + 0x14
-        # format string: <: little endian. L: 4 bytes (1 dword)
-        virtual_size = struct.unpack_from('<L', self.bin_contents, pointer_to_raw_data_offs)
-        return virtual_size[0]
+        virtual_size = self._unpack_dword(pointer_to_raw_data_offs)
+        return virtual_size
 
     @staticmethod
     def _bytes_to_string(value, length):
         # https://gph.is/1KjihQe (https://stackoverflow.com/questions/3673428/convert-int-to-ascii-and-back-in-python)
         return ''.join(chr((value >> 8 * (length - byte - 1)) & 0xFF) for byte in range(length))
+
+    def _unpack_qword_big_endian(self, offs):
+        # format string: >: big endian. Q: 8 bytes (2 dwords)
+        return struct.unpack_from('>Q', self.bin_contents, offs)[0]
+
+    def _unpack_dword(self, offs):
+        # format string: <: little endian. L: 4 bytes (1 dword)
+        return struct.unpack_from('<L', self.bin_contents, offs)[0]
+
+    def _unpack_word(self, offs):
+        # format string: <: little endian. H: 2 bytes (1 word)
+        return struct.unpack_from('<H', self.bin_contents, offs)[0]

@@ -22,12 +22,7 @@ class ParsePE32(object):
 
     def __init__(self):
         self.bin_contents = None
-        self.image_dos_header_offs = 0
-        self.pe_header_offs = None  # needs to be computed dynamically
-        self.file_header_offs = None  # needs to be computed dynamically
-        self.optional_header_offs = None  # needs to be computed dynamically
-        self.number_of_sections = None  # needs to be computed dynamically
-        self.section_headers_info = None  # needs to be computed dynamically
+        self.section_headers_info = None
         self.pe_section_utils = None
 
     def execute(self, bin_path):
@@ -67,16 +62,14 @@ class ParsePE32(object):
     def get_import_descriptor_size(self):
         import_directory_offs = self.get_import_directory_offs()
         size_offs = 0x4
-        # format string: <: little endian. H: 2 bytes (1 word)
-        import_descriptor_size = struct.unpack_from('<H', self.bin_contents, import_directory_offs + size_offs)
-        return import_descriptor_size[0]
+        import_descriptor_size = self._unpack_word(self.bin_contents, import_directory_offs + size_offs)
+        return import_descriptor_size
 
     def get_first_import_descriptor_rva(self):
         import_directory_offs = self.get_import_directory_offs()
         virtual_address_offs = 0x0
-        # format string: <: little endian. H: 2 bytes (1 word)
-        import_descriptor_rva = struct.unpack_from('<H', self.bin_contents, import_directory_offs + virtual_address_offs)
-        return import_descriptor_rva[0]
+        import_descriptor_rva = self._unpack_word(self.bin_contents, import_directory_offs + virtual_address_offs)
+        return import_descriptor_rva
 
     def get_first_import_descriptor_foff(self):
         import_directory_offs = self.get_first_import_descriptor_rva()
@@ -84,9 +77,8 @@ class ParsePE32(object):
 
     def get_dll_name(self, import_descriptor_addr):
         name_offs = 0xC
-        # format string: <: little endian. L: 4 bytes (1 dword)
-        name_rva = struct.unpack_from('<L', self.bin_contents, import_descriptor_addr + name_offs)
-        name_foff = self._rva_to_file_offset(name_rva[0])
+        name_rva = self._unpack_dword(self.bin_contents, import_descriptor_addr + name_offs)
+        name_foff = self._rva_to_file_offset(name_rva)
         name = self._read_null_terminated_ascii_string(name_foff)
         return name
 
@@ -109,6 +101,16 @@ class ParsePE32(object):
     @staticmethod
     def _rva_belongs_to_section(rva, section_info):
         return section_info['Virtual Address'] <= rva < section_info['Virtual Address'] + section_info['Virtual Size']
+
+    @staticmethod
+    def _unpack_dword(contents, offs):
+        # format string: <: little endian. L: 4 bytes (1 dword)
+        return struct.unpack_from('<L', contents, offs)[0]
+
+    @staticmethod
+    def _unpack_word(contents, offs):
+        # format string: <: little endian. H: 2 bytes (1 word)
+        return struct.unpack_from('<H', contents, offs)[0]
 
 
 if __name__ == '__main__':
