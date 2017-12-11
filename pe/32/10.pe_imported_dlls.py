@@ -2,7 +2,7 @@
 import struct
 import logging
 import sys
-from libs.pe_section_utils import PESectionUtils
+from libs.pe_sections_utils import PESectionUtils
 
 
 class FileUtils(object):
