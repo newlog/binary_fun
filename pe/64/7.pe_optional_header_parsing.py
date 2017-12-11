@@ -117,7 +117,7 @@ class ParsePE64(object):
         readable_magic = self._translate_optional_header_magic(magic_value[0])
         return readable_magic
 
-    def get_image_base(self):
+    def get_image_base(self):  # Different from PE32
         self.optional_header_offs = self.get_optional_header_offs()
         image_base_offs = 0x18
         # format string: <: little endian. L: 8 bytes (2 dword)
@@ -169,7 +169,7 @@ class ParsePE64(object):
         return readable_arch
 
     @staticmethod
-    def _translate_characteristics(value):
+    def _translate_characteristics(value):  # Different from PE32
         is_dll = 'DLL: True' if value & 0x2000 == 0x2000 else 'DLL: False'
         is_32bit = '32-bit: True' if value & 0x0100 == 0x0100 else '32-bit: False'
         is_16bit = '16-bit: True' if value & 0x0040 == 0x0040 else '16-bit: False'
