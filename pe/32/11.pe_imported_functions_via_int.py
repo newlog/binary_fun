@@ -81,21 +81,21 @@ class ParsePE32(object):
 
     def get_dll_imported_functions(self, import_descriptor_addr):
         function_names = []
-        first_thunk_foff = self.get_original_first_thunk_foff(import_descriptor_addr)
+        original_first_thunk_foff = self.get_original_first_thunk_foff(import_descriptor_addr)
         while True:
-            function_name = self.get_imported_function_name(first_thunk_foff)
+            function_name = self.get_imported_function_name(original_first_thunk_foff)
             if function_name:
                 function_names.append(function_name)
-                first_thunk_foff += 0x4
+                original_first_thunk_foff += 0x4
             else:
                 break
         return function_names
 
     def get_original_first_thunk_foff(self, import_descriptor_addr):
-        first_thunk_off = 0x0
-        first_thunk_rva = self._unpack_dword(self.bin_contents, import_descriptor_addr + first_thunk_off)
-        first_thunk_foff = self._rva_to_file_offset(first_thunk_rva)
-        return first_thunk_foff
+        original_first_thunk_off = 0x0
+        original_first_thunk_rva = self._unpack_dword(self.bin_contents, import_descriptor_addr + original_first_thunk_off)
+        original_first_thunk_foff = self._rva_to_file_offset(original_first_thunk_rva)
+        return original_first_thunk_foff
 
     def get_imported_function_name(self, first_thunk_foff):
         name = None
