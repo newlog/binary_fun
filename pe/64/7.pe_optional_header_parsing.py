@@ -117,7 +117,7 @@ class ParsePE64(object):
         readable_magic = self._translate_optional_header_magic(magic_value[0])
         return readable_magic
 
-    def get_image_base(self):  # Different from PE32
+    def get_image_base(self):  # PE32+: Different from PE32
         self.optional_header_offs = self.get_optional_header_offs()
         image_base_offs = 0x18
         # format string: <: little endian. L: 8 bytes (2 dword)

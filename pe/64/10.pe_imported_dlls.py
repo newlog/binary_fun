@@ -51,8 +51,8 @@ class ParsePE32(object):
 
     def get_data_directory_array_offs(self):  # _IMAGE_DATA_DIRECTORY DataDirectory[16]; from OptionalHeader
         optional_header_offs = self.pe_section_utils.get_optional_header_offs()
-        # offsets in Ero's poster are wrong starting with the second QWORD (SizeOfStackReserve). The +0x10 adjusts it.
-        data_directories_offs = optional_header_offs + 0x60 + 0x10
+        # PE32+: offsets in Ero's poster are wrong starting with the second QWORD (SizeOfStackReserve).
+        data_directories_offs = optional_header_offs + 0x60 + 0x10  # The +0x10 adjusts it.
         return data_directories_offs
 
     def get_import_directory_offs(self):  # IMAGE_DIRECTORY_ENTRY_IMPORT (DataDirectory[1])
