@@ -45,7 +45,7 @@ class PEDataDirectoryUtils(object):
         return self.data_directory_info
 
     def get_number_of_rva_and_sizes(self):
-        number_of_rva_and_sizes_offs = 0x7C  # PE32+: Adjust offset for OptionalHeader field
+        number_of_rva_and_sizes_offs = 0x6C  # PE32+: Adjust offset for OptionalHeader field
         optional_header_offs = self.optional_header_offs
         self.number_of_rva_and_sizes = self._unpack_dword(optional_header_offs + number_of_rva_and_sizes_offs)
         return self.number_of_rva_and_sizes
