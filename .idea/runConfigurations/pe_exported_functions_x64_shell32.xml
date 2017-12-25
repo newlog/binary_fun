@@ -12,7 +12,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <module name="binary_fun" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pe/64/14.pe_exported_functions.py" />
+    <option name="SCRIPT_NAME" value="C:\Users\IEUser\PycharmProjects\binary_fun\pe\64\14.pe_exported_functions_by_name.py" />
     <option name="PARAMETERS" value="bin/shell32.dll" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
