@@ -57,7 +57,7 @@ class PEDataDirectoryUtils(object):
         return rva
 
     def get_data_directory_entry_size(self, index):
-        size_offs = 0x0
+        size_offs = 0x4
         data_directory_entry_offs = self.get_specific_data_directory_entry_offs(index)
         size = self._unpack_dword(data_directory_entry_offs + size_offs)
         return size
