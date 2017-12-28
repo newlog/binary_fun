@@ -51,8 +51,6 @@ class ParsePE32(object):
             logging.info('  VA: 0x{:x}, RVA: 0x{:x}, File Offset: {}'.format(callback_va, callback_rva, callback_foff))
 
     def get_image_tls_directory_rva(self):
-        if self.image_tls_directory_foff:
-            return self.image_tls_directory_foff
         tls_rva = self.data_directory_info[9]['rva']
         return tls_rva
 

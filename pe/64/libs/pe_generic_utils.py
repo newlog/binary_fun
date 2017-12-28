@@ -36,6 +36,11 @@ class PEGenericUtils(object):
         return struct.unpack_from('>Q', contents, offs)[0]
 
     @staticmethod
+    def unpack_qword(contents, offs):
+        # format string: <: little endian. Q: 8 bytes (2 dwords)
+        return struct.unpack_from('<Q', contents, offs)[0]
+
+    @staticmethod
     def unpack_dword(contents, offs):
         # format string: <: little endian. L: 4 bytes (1 dword)
         return struct.unpack_from('<L', contents, offs)[0]
